@@ -28,4 +28,9 @@ app.use((req, res, next) => {
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
+// Route to serve Mapbox token to frontend
+app.get('/api/v1/config/mapbox', (req, res) => {
+  res.json({ token: process.env.MAPBOX_TOKEN });
+});
+
 module.exports = app;
