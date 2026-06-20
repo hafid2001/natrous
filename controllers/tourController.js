@@ -4,7 +4,6 @@ exports.checkID = (req, res, next, val) => {
   console.log(`Tour id is: ${val}`);
   next();
 };
-
 exports.createTour = async (req, res) => {
   try {
     //const newTour = new Tour({})
@@ -27,7 +26,38 @@ exports.createTour = async (req, res) => {
  
 exports.getALLTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    //BUILD QUERY 
+    //1A) Filtering
+     const queryObj = {...req.query}
+     const excludedFields = ['page','sort','limit','fields'];
+     excludedFields.forEach(el => delete queryObj[el]);
+     //2 ) Advanced Filtering
+let queryStr = JSON.stringify(queryObj);
+queryStr=  queryStr.replace((/\b(gte|gt|lte|lt)\b/g),match=> `$${match}`);
+console.log(JSON.parse(queryStr));
+
+let query = Tour.find(JSON.parse(queryStr));
+// 2) Sorting
+if(req.query.sort){
+const sortBy = req.query.sort.split(',').join(' ');
+console.log(sortBy);
+query = query.sort(sortBy);
+
+
+}
+
+     //const query = Tour.find()
+     // .where('duration')
+     // .equals(5)
+     // .where('difficulty')
+     // .equals('easy');
+
+ 
+//EXECUTE QUERY
+
+    const tours = await query ;
+
+//send REsponse 
     res.status(200).json({
       status: 'success',
       results: tours.length,
