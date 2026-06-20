@@ -32,19 +32,24 @@ exports.createTour = async (req, res) => {
   }
 };
 
-
 exports.getALLTours = async (req, res) => {
   try {
-   
-    const features = new APIFeatures(Tour.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .pagination();
+    // Extract filter object from query
+    const queryObj = { ...req.query };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach(el => delete queryObj[el]);
+
+    // Build the query with filter
+    const features = new APIFeatures(Tour.find(queryObj), req.query)
+      .sort()
+      .limitFields();
+
+    // Await pagination since it's async
+    await features.pagination();
 
     const tours = await features.query;
 
-    //send REsponse
+    // send REsponse
     res.status(200).json({
       status: 'success',
       results: tours.length,
@@ -53,7 +58,7 @@ exports.getALLTours = async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: 'fail',
-      message: err
+      message: err.message || 'An error occurred'
     });
   }
 };

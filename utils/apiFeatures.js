@@ -7,16 +7,8 @@ class APIFeatures {
   }
 
   filter() {
-    const queryObj = { ...this.queryString };
-    const excludedFields = ['page', 'sort', 'limit', 'fields'];
-    excludedFields.forEach(el => delete queryObj[el]);
-    //2 ) Advanced Filtering
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
-    console.log(JSON.parse(queryStr));
-
-    this.query = this.query.find(JSON.parse(queryStr));
-    //let query = Tour.find(JSON.parse(queryStr));
+    // Filter is now handled in the controller before passing to APIFeatures
+    // This method is kept for backward compatibility but doesn't do anything
     return this;
   }
 
@@ -44,7 +36,7 @@ class APIFeatures {
   }
 
   async pagination() {
-    //4) Pagination
+    // 4) Pagination
     const page = this.queryString.page * 1 || 1;
     const limit = this.queryString.limit * 1 || 100;
     const skip = (page - 1) * limit;
