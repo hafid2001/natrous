@@ -34,13 +34,9 @@ exports.createTour = async (req, res) => {
 
 exports.getALLTours = async (req, res) => {
   try {
-    // Extract filter object from query
-    const queryObj = { ...req.query };
-    const excludedFields = ['page', 'sort', 'limit', 'fields'];
-    excludedFields.forEach(el => delete queryObj[el]);
-
-    // Build the query with filter
-    const features = new APIFeatures(Tour.find(queryObj), req.query)
+    // Build the query with filter, sort, limitFields, and pagination
+    const features = new APIFeatures(Tour.find(), req.query)
+      .filter()
       .sort()
       .limitFields();
 
