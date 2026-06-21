@@ -42,7 +42,7 @@ class APIFeatures {
     return this;
   }
 
-  async pagination() {
+   pagination() {
     // 4) Pagination
     const page = this.queryString.page * 1 || 1;
     const limit = this.queryString.limit * 1 || 100;
@@ -51,7 +51,7 @@ class APIFeatures {
     this.query = this.query.skip(skip).limit(limit);
 
     if (this.queryString.page) {
-      const numTours = await Tour.countDocuments();
+      const numTours =  Tour.countDocuments();
       if (skip >= numTours) throw new Error('This page does not exist');
     }
     return this;

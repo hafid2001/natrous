@@ -41,9 +41,8 @@ exports.getALLTours = async (req, res) => {
       .limitFields()
       .pagination();
       
+      
 
-    // Await pagination since it's async
-    await features.pagination();
 
     const tours = await features.query;
 
@@ -141,3 +140,4 @@ exports.getToursStats = async (req, res) => {
     });
   }
 };
+

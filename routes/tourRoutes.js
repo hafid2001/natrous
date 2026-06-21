@@ -9,6 +9,7 @@ router
 router.route('/').post(tourController.createTour);
 router.route('/').get(tourController.getALLTours);
 router.route('/tour-stats').get(tourController.getToursStats);
+
 router.route('/:id').get(tourController.getTour);
 
 router.route('/:id').patch(tourController.updateTour);
