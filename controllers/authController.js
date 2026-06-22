@@ -59,3 +59,28 @@ exports.login = catchAsync(async (req, res, next) => {
     token
   });
 });
+
+
+exports.protect = catchAsync(async (req,res,next)=>{
+//1) Gtting token and check  if its there
+let token;
+if(
+req.headers.authorization && 
+req.headers.authorization.startsWith('Beearer')
+){
+token = req.headers.authorization.splite(' ')[1];
+
+}
+console.log(token);
+if(!token){
+return next(
+    new AppError('You are not logged in! Pleas log in to get acess.',401)
+);
+
+}
+
+
+
+
+
+})
