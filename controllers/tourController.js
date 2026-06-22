@@ -1,6 +1,7 @@
 const APIFeatures = require('./../utils/apiFeatures');
 const Tour = require('./../models/tourModel');
 const catchAsync = require('./../utils/catchAsync');
+const AppError = require('./../utils/appError');
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-ratingsAverage,price';
@@ -52,21 +53,28 @@ exports.getALLTours = async (req, res) => {
     });
   }
 };
-exports.getTour = async (req, res) => {
-  try {
-    const tour = await Tour.findById(req.params.id);
-    // Tour.findOne({_id:req.params.id})/ hadi findbyid = Tour.findOne({_id:req.params.id})
-    res.status(200).json({
-      status: 'success',
-      data: { tour }
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: err
-    });
+const mongoose = require('mongoose');
+
+exports.getTour = catchAsync(async (req, res, next) => {
+
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return next(new AppError('Invalid Tour ID', 400));
   }
-};
+
+  const tour = await Tour.findById(req.params.id);
+
+  if (!tour) {
+    return next(new AppError('No tour found with that ID', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour
+    }
+  });
+
+});
 exports.updateTour = async (req, res) => {
   try {
     const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
