@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 // name,email,photo ,password, passwrodConfirme
@@ -36,7 +37,9 @@ validator:function(el){
 }
 
 },
-passwordChangedAt: Date
+passwordChangedAt: Date,
+passwordRestToken : String,
+passwordRrestExpires:Date
 
 });
 userSchema.pre('save',async function(next){
@@ -64,6 +67,28 @@ return JWTTimestamp < changedTimestamp;
    //false means Not chaned 
    return false;
 }
+
+userSchema.methods.creatPasswordRestToken= function(){
+const restToken = crypto.randomBytes(32).toString('hex');
+
+this.passwordRestToken = crypto
+    .createHash('sha256')//أنشئ Hash باستخدام SHA256 
+    .update(restToken)//يعني اعمل Hash لهذا الـ token.
+    .digest('hex');//أعطني النتيجة كـ Hex
+    
+    this.passwordRrestExpires = Date.now() + 10 * 60 * 1000 ;
+
+    return restToken;
+
+
+
+
+};
+
+
+
+
+
 const User= mongoose.model('User',userSchema);
 
 module.exports = User;

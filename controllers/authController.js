@@ -119,6 +119,22 @@ next();
 
 }
 
+exports.forgotPassword = catchAsync(async(req,res,next)=>{
+//1 get user basd on posted email
+const  user = await User.findOne({email : req.body.email});
+if(!user){
+  return next(new AppError('There is no user with email address',404));
+
+}
+//2) Generate the random rest token 
+const resetToken = user.creatPasswordRestToken();
+await user.save({validateBeforSave: false});
+
+
+
+
+});
+
 
 
 
