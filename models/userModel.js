@@ -68,21 +68,17 @@ return JWTTimestamp < changedTimestamp;
    return false;
 }
 
-userSchema.methods.creatPasswordRestToken= function(){
-const restToken = crypto.randomBytes(32).toString('hex');
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
 
-this.passwordRestToken = crypto
-    .createHash('sha256')//أنشئ Hash باستخدام SHA256 
-    .update(restToken)//يعني اعمل Hash لهذا الـ token.
-    .digest('hex');//أعطني النتيجة كـ Hex
-    
-    this.passwordRrestExpires = Date.now() + 10 * 60 * 1000 ;
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
 
-    return restToken;
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
 
-
-
-
+  return resetToken;
 };
 
 
