@@ -185,6 +185,42 @@ If you didn't forget your password, please ignore this email!`;
 
 });
 
-exports.resetPassowrd = (req,res,next)=> {
-}
+exports.resetPassowrd = catchAsync(async(req,res,next)=> {
+//1 get user bsed on the token 
+const hashedToken = crypt
+        .createHash('sha256')
+        .update(req.params.token)
+        .digest('hex');
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: {$gt:Date.now()}
+  });
+  
+  //2 if token has not expired, and ther is user ,set the new password 
+  if(!user){
+    return next(new AppError('Tokn is invalid or has expird',400))
+  }
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetExpires= undefined;
+  user.passwordResetToken= undefined;
+  
+//3 update changedPassowrdAt property for the user 
+  await user.save();
+  
+
+  
+  //4 log the user in , send jwt 
+  // 4. Generate a JWT
+  const token = signToken(user._id);
+
+  // 5. Send the token back to the client
+  res.status(200).json({
+    status: 'success',
+    token
+  });
+
+
+});
 
