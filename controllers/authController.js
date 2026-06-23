@@ -17,6 +17,20 @@ const signToken = id => {
     }
   );
 };
+const createSendToken = (user,statusCode,res)=>{
+const token= signToken(user._id);
+es.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user
+    }
+  });
+
+
+
+}
+
 
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
@@ -205,7 +219,7 @@ const hashedToken = crypt
   user.passwordConfirm = req.body.passwordConfirm;
   user.passwordResetExpires= undefined;
   user.passwordResetToken= undefined;
-  
+
 //3 update changedPassowrdAt property for the user 
   await user.save();
   
@@ -223,4 +237,28 @@ const hashedToken = crypt
 
 
 });
+
+exports.updatePassword = catchAsync(async(req,res,next)=>{
+//1 get user from collection
+const user = User.findById(req.user.id).select('+password');//req.user.id not .body because we get from protect middleawer , 
+
+//2 check if Posted current password is correct 
+if(!(await user.correctPassword(req.body.passwordCurrent,user.password))){
+  return next(new AppError('Your curren password is wrong',401));
+
+}
+//3) if so, update password 
+user.password = req.body.password;
+user.passwordConfirm= req.body.passwordConfirm;
+await user.save();
+
+
+//4 log user in , send jwt 
+
+
+ 
+createSendToken(user,200,res);
+
+
+})
 
