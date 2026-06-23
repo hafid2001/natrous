@@ -13,6 +13,8 @@ router.post('/forgotePassword',authController.forgotPassword);
 router.post('/restPassword/:token',authController.resetPassowrd);
 
 router.patch('/updateMyPassword',authController.protect,authController.forgotPassword);
+router.patch('/updateMe',authController.protect,userController.updateMe);
+router.delete('/deleteMe',authController.protect,userController.deleteMe);
 
 
 router

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const crypto = require('crypto');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const { deflate } = require('zlib');
 // name,email,photo ,password, passwrodConfirme
 const userSchema = new mongoose.Schema({
 name:{
@@ -39,14 +40,31 @@ validator:function(el){
 },
 passwordChangedAt: Date,
 passwordRestToken : String,
-passwordRrestExpires:Date
+passwordRrestExpires:Date,
+ active:{
+type: Boolean,
+deflault: true,
+select : false
+
+
+ }
+
 
 });
+
 userSchema.pre('save',async function(next){
 //only run this function if password was actully modified
 if(!this.isModified('password'))return next();
 //Hash the password with cost of 12
 this.password = await bcrypt.hash(this.password,12);
+
+userSchema.pre(/^find/,function(next){
+//this points to the curretn query
+this.find({active :{$ne : false}});
+next()
+
+
+});
 
 //Delete passwordConfirm field 
 this.passwordConfirm = undefined;
