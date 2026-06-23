@@ -21,6 +21,10 @@ const handleValidationErrorDB = err => {
 };
 
 
+
+const handleJwtError = err => new AppError('Invalid token,Pleas log in agian',401);
+const handleJwtExpiredError = err => new AppError('Your token has expired! log in again.',401);
+
 const sendErrorDev=(err,res)=>{
 res.status(err.statusCode).json({
 status : err.status,
@@ -29,6 +33,7 @@ message:err.message,
 stack:err.stack
 });
 };
+
 
 const sendErrorProd=(err,res)=>{
 //Operational, trusted error: send mesaage to client 
@@ -81,9 +86,9 @@ if(error.name === 'ValidarionError'){
 error = handleValidarionErrorDB(error);
 }
 
+if(error.name === 'JsonwebTokenError') error = handleJwtError(error);
 
-
-
+if(error.name === 'TokenExpiredError') error = handleJwtExpiredError(error);
   sendErrorProd(err,res);
  };
 };
