@@ -122,11 +122,6 @@ next();
    
 });
 
-tourSchema.pre('save',async function(next){
-const guidPromises = this.guides.map( async id => await User.findById(id));
-this.guides = await Promise.all(guidPromises);
-});
-      
 
 
 
