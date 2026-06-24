@@ -7,6 +7,7 @@ const globalErrorhandling = require('./controllers/errorController');
 const ratelimit = require('express-rate-limit');
 const helmet = require('helmet');
 
+
 const app = express();
 //set security Http headers
 app.use(helmet());
@@ -24,7 +25,14 @@ message : 'too many req from this ip , please try again in an hour'
 
 app.use('/api',limiter);
 //Body pareser, reading data from body into req.body 
-app.use(express.json());
+app.use(express.json({limit : '10kb'}));
+//Data snitization against Nosql query injection
+app.use(mongoSanitize());
+//Data sanitization
+app.use(xss());
+
+
+
 //serving static files
 app.use(express.static(`${__dirname}/public`));
 
