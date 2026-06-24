@@ -6,6 +6,8 @@ const userRouter = require('./routes/userRoutes');
 const globalErrorhandling = require('./controllers/errorController');
 const ratelimit = require('express-rate-limit');
 const helmet = require('helmet');
+const { whitelist } = require('validator');
+const hpp = require('hpp');
 
 
 const app = express();
@@ -27,10 +29,20 @@ app.use('/api',limiter);
 //Body pareser, reading data from body into req.body 
 app.use(express.json({limit : '10kb'}));
 //Data snitization against Nosql query injection
-app.use(mongoSanitize());
+//app.use(mongoSanitize());
 //Data sanitization
-app.use(xss());
+//app.use(xss());
+// prevet parameter pollution 
+app.use(
+hpp({
 
+
+  whitelist:['duration ']
+})
+
+
+
+);
 
 
 //serving static files
