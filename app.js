@@ -4,12 +4,25 @@ const AppError = require('./utils/appError');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const globalErrorhandling = require('./controllers/errorController');
+
+const ratelimit = require('express-rate-limit');
+
 const app = express();
 
-// 1) MIDDLEWARES
+
+
+// 1) Globale   MIDDLEWARES
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
+const limiter = ratelimit({
+max: 100,
+windowMs : 60 * 60* 1000,
+message : 'too many req from this ip , please try again in an hour'
+});
+
+app.use('/api',limiter);
 
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
