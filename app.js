@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const AppError = require('./utils/appError');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const reviewRouter = require('./routes/reviewRoutes')
 const globalErrorhandling = require('./controllers/errorController');
 const ratelimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -56,6 +57,7 @@ app.use((req, res, next) => {
 // 3) ROUTES
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/review',reviewRouter);
 // Route to serve Mapbox token to frontend
 app.get('/api/v1/config/mapbox', (req, res) => {
   res.json({ token: process.env.MAPBOX_TOKEN });

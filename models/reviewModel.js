@@ -22,7 +22,7 @@ required:[true,'Review must belong to a tour']
 },
 user:{
     type:mongoose.Schema.ObjectId,
-    re:'User',
+    ref:'User',
     required:[true,'Review must belon to a user']
 },
 
@@ -32,3 +32,7 @@ user:{
   }
 
 });
+
+const Review = mongoose.model('Review', tourSchema);
+
+module.exports = Review;
